@@ -16,12 +16,12 @@ public class LineService {
 
         Line line = new Line(lineName);
         LineRepository.addLine(line);
-        LineStationRepository.addLineStations(line, startStation, endStation);
+        RouteRepository.addRoute(line, startStation, endStation);
     }
 
     public void deleteLine(String lineName) {
         Line line = LineRepository.findByName(lineName);
         LineRepository.deleteLine(line);
-        LineStationRepository.deleteLine(line);
+        RouteRepository.deleteLine(line);
     }
 }

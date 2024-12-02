@@ -1,6 +1,6 @@
 package subway.service;
 
-import subway.domain.LineStationRepository;
+import subway.domain.RouteRepository;
 import subway.domain.Station;
 import subway.domain.StationRepository;
 
@@ -24,7 +24,7 @@ public class StationService {
     }
 
     private void validLineStation(Station station) {
-        if(LineStationRepository.isPresentStation(station)){
+        if(RouteRepository.isPresentStation(station)){
             throw new IllegalArgumentException(REGISTERED_STATION_EXCEPTION);
         }
     }
