@@ -22,5 +22,6 @@ public class LineService {
     public void deleteLine(String lineName) {
         Line line = LineRepository.findByName(lineName);
         LineRepository.deleteLine(line);
+        LineStationRepository.deleteLine(line);
     }
 }

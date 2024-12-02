@@ -29,6 +29,13 @@ public class StationRepository {
         stations.add(station);
     }
 
+    public static boolean deleteStation(Station station) {
+        if(!contains(station)) {
+            throw new IllegalArgumentException(NOT_FOUND_STATION_EXCEPTION);
+        }
+        return stations.remove(station);
+    }
+
     public static boolean deleteStation(String name) {
         return stations.removeIf(station -> Objects.equals(station.getName(), name));
     }

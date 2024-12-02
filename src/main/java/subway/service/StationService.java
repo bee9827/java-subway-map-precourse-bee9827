@@ -20,11 +20,11 @@ public class StationService {
     public void deleteStation(String name) {
         Station station = StationRepository.findByName(name);
         validLineStation(station);
-        StationRepository.deleteStation(name);
+        StationRepository.deleteStation(station);
     }
 
     private void validLineStation(Station station) {
-        if(LineStationRepository.checkStation(station)){
+        if(LineStationRepository.isPresentStation(station)){
             throw new IllegalArgumentException(REGISTERED_STATION_EXCEPTION);
         }
     }
