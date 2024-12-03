@@ -22,7 +22,8 @@ public class LineHandler implements Handler {
     @Override
     public void run() {
         outputView.printInstruction("노선 관리 화면");
-        handle(inputView.askLine());
+        outputView.printLineScreen();
+        handle();
     }
 
     @Override
@@ -48,15 +49,18 @@ public class LineHandler implements Handler {
     }
 
     @Override
-    public <T> void handle(T selected) {
-        runWithRetry(() -> lineRunnable.get(selected).run(), outputView);
+    public void handle() {
+        runWithRetry(() -> {
+            lineRunnable.get(inputView.askLine()).run();
+        }, outputView);
     }
 
     private void initializeLineHandler() {
         lineRunnable.put(LineFeature.ENROLL, this::enroll);
         lineRunnable.put(LineFeature.DELETE, this::delete);
         lineRunnable.put(LineFeature.CHECK, this::printAll);
-        lineRunnable.put(LineFeature.BACK, () -> {});
+        lineRunnable.put(LineFeature.BACK, () -> {
+        });
     }
 
 

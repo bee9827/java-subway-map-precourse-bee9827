@@ -1,7 +1,7 @@
 package subway.view;
 
 import subway.domain.Station;
-import subway.view.feature.Feature;
+import subway.view.feature.*;
 
 import java.util.List;
 import java.util.Map;
@@ -40,6 +40,34 @@ public class Outputview {
 
     public void printError(String error) {
         System.out.println(ERROR_HEADER + error);
+    }
+
+    public void printMainScreen() {
+        for (MainFeature mainFeature : MainFeature.values()) {
+            System.out.printf("%s. %s%n", mainFeature.getInput(), mainFeature.getName());
+        }
+        System.out.println();
+    }
+
+    public void printStationScreen() {
+        for (StationFeature stationFeature : StationFeature.values()) {
+            System.out.printf("%s. %s%n", stationFeature.getInput(), stationFeature.getName());
+        }
+        System.out.println();
+    }
+
+    public void printLineScreen() {
+        for (LineFeature lineFeature : LineFeature.values()) {
+            System.out.printf("%s. %s%n", lineFeature.getInput(), lineFeature.getName());
+        }
+        System.out.println();
+    }
+
+    public void printRouteScreen() {
+        for (RouteFeature routeFeature : RouteFeature.values()) {
+            System.out.printf("%s. %s%n", routeFeature.getInput(), routeFeature.getName());
+        }
+        System.out.println();
     }
 
 }

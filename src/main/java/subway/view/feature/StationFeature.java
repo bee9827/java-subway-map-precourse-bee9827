@@ -20,7 +20,7 @@ public enum StationFeature implements Feature {
                 return feature;
             }
         }
-        return null;
+        throw new IllegalArgumentException(INVALID_FEATURE_EXCEPTION);
     }
 
     @Override

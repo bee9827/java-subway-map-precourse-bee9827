@@ -24,18 +24,21 @@ public class Controller {
     private final RouteService routeService = new RouteService();
 
 
-    public Controller(Inputview inputView, Outputview outputView, StationHandler stationHandler, LineHandler lineHandler, RouteHandler routeHandler) {
+    public Controller(Inputview inputView, Outputview outputView) {
         this.inputView = inputView;
         this.outputView = outputView;
-        this.stationHandler = stationHandler;
-        this.lineHandler = lineHandler;
-        this.routeHandler = routeHandler;
+        this.stationHandler = new StationHandler(inputView,outputView);
+        this.lineHandler = new LineHandler(inputView,outputView);
+        this.routeHandler = new RouteHandler(inputView,outputView);
         initializeMainRunnable();
     }
 
     public void run() {
-        outputView.printInstruction("메인 화면");
-        handle(inputView.askMain());
+        runWithRetry(() -> {
+            outputView.printInstruction("메인 화면");
+            outputView.printMainScreen();
+            handle();
+        });
     }
 
     private void initializeMainRunnable() {
@@ -43,19 +46,22 @@ public class Controller {
         mainRunnable.put(MainFeature.LINE, lineHandler::run);
         mainRunnable.put(MainFeature.ROUTE, routeHandler::run);
         mainRunnable.put(MainFeature.ROUTE_PRINT, this::printAll);
-        mainRunnable.put(MainFeature.QUIT,() -> {});
+        mainRunnable.put(MainFeature.QUIT, () -> {throw new IllegalStateException("종료");});
     }
 
     private void printAll() {
         outputView.printInstruction("지하철 노선도");
-        routeService.findAll().forEach((k,v) -> {
-            outputView.printInfo(k,v);
+        routeService.findAll().forEach((k, v) -> {
+            outputView.printInfo(k, v);
             outputView.lineSeparator();
         });
     }
 
-    private void handle(MainFeature selected) {
-        runWithRetry(()-> mainRunnable.get(selected).run());
+    private void handle() {
+        runWithRetry(() ->{
+            outputView.printInstruction("원하는 기능을 선택하세요.");
+            mainRunnable.get(inputView.askMain()).run();
+        });
     }
 
     private void runWithRetry(Runnable runnable) {
@@ -67,6 +73,8 @@ public class Controller {
             } catch (IllegalArgumentException e) {
                 outputView.printError(e.getMessage());
                 outputView.lineSeparator();
+            } catch(IllegalStateException e) {
+                return ;
             }
         }
     }

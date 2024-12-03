@@ -22,7 +22,8 @@ public class StationHandler implements Handler {
     @Override
     public void run() {
         outputView.printInstruction("역 관리 화면");
-        handle(inputView.askStation());
+        outputView.printStationScreen();
+        handle();
     }
 
     @Override
@@ -46,8 +47,11 @@ public class StationHandler implements Handler {
     }
 
     @Override
-    public <T> void handle(T selected) {
-        runWithRetry(() -> stationRunnable.get(selected).run(), outputView);
+    public void handle() {
+        runWithRetry(() -> {
+            outputView.printInstruction("원하는 기능을 선택하세요.");
+            stationRunnable.get(inputView.askStation()).run();
+        }, outputView);
     }
 
     private void initializeStationHandler() {

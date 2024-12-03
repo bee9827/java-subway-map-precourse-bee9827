@@ -22,5 +22,5 @@ public interface Handler {
     void enroll();
     void delete();
     void printAll();
-    <T> void handle(T selected);
+    void handle();
 }

@@ -22,7 +22,8 @@ public class RouteHandler implements Handler {
     @Override
     public void run() {
         outputView.printInstruction("구간 관리");
-        handle(inputView.askRoute());
+        outputView.printRouteScreen();
+        handle();
     }
 
     @Override
@@ -49,8 +50,11 @@ public class RouteHandler implements Handler {
     }
 
     @Override
-    public <T> void handle(T selected) {
-        runWithRetry(() -> routeRunnable.get(selected).run(), outputView);
+    public void handle() {
+        runWithRetry(() -> {
+            outputView.printInstruction("원하는 기능을 선택하세요.");
+            routeRunnable.get(inputView.askRoute()).run();
+        }, outputView);
     }
 
     private void initializeRouteHandler() {
