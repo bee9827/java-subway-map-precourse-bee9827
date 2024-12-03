@@ -5,12 +5,16 @@ import subway.domain.Station;
 import subway.domain.StationRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class StationService {
     public static final String REGISTERED_STATION_EXCEPTION = "노선에 등록 되어 있는 지하철 역 입니다.";
 
-    public List<Station> findAll() {
-        return StationRepository.stations();
+    public List<String> findAll() {
+        return StationRepository.stations()
+                .stream()
+                .map(Station::getName)
+                .collect(Collectors.toList());
     }
 
     public void addStation(String name) {
@@ -24,7 +28,7 @@ public class StationService {
     }
 
     private void validLineStation(Station station) {
-        if(RouteRepository.isPresentStation(station)){
+        if (RouteRepository.isPresentStation(station)) {
             throw new IllegalArgumentException(REGISTERED_STATION_EXCEPTION);
         }
     }

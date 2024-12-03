@@ -1,6 +1,6 @@
 package subway.view.feature;
 
-public enum MainFeature {
+public enum MainFeature implements Feature {
     STATION("1", "역 관리"),
     LINE("2","노선 관리"),
     ROUTE("3","구간 관리"),
@@ -24,10 +24,12 @@ public enum MainFeature {
         return null;
     }
 
+    @Override
     public String getInput() {
         return input;
     }
 
+    @Override
     public String getName() {
         return name;
     }

@@ -16,90 +16,57 @@ public class Controller {
     private final Inputview inputView;
     private final Outputview outputView;
 
-    private final EnumMap<MainFeature, Runnable> mainHandler = new EnumMap<>(MainFeature.class);
-    private final EnumMap<StationFeature, Runnable> stationHandler = new EnumMap<>(StationFeature.class);
-    private final EnumMap<LineFeature, Runnable> lineHandler = new EnumMap<>(LineFeature.class);
-    private final EnumMap<RouteFeature, Runnable> routeHandler = new EnumMap<>(RouteFeature.class);
+    private final StationHandler stationHandler;
+    private final LineHandler lineHandler;
+    private final RouteHandler routeHandler;
 
-
-    private final StationService stationService = new StationService();
-    private final LineService lineService = new LineService();
+    private final EnumMap<MainFeature, Runnable> mainRunnable = new EnumMap<>(MainFeature.class);
     private final RouteService routeService = new RouteService();
 
-    public Controller(Inputview inputView, Outputview outputView) {
+
+    public Controller(Inputview inputView, Outputview outputView, StationHandler stationHandler, LineHandler lineHandler, RouteHandler routeHandler) {
         this.inputView = inputView;
         this.outputView = outputView;
+        this.stationHandler = stationHandler;
+        this.lineHandler = lineHandler;
+        this.routeHandler = routeHandler;
+        initializeMainRunnable();
     }
 
     public void run() {
-        runWithRetry(() -> {
+        outputView.printInstruction("메인 화면");
+        handle(inputView.askMain());
+    }
 
+    private void initializeMainRunnable() {
+        mainRunnable.put(MainFeature.STATION, stationHandler::run);
+        mainRunnable.put(MainFeature.LINE, lineHandler::run);
+        mainRunnable.put(MainFeature.ROUTE, routeHandler::run);
+        mainRunnable.put(MainFeature.ROUTE_PRINT, this::printAll);
+        mainRunnable.put(MainFeature.QUIT,() -> {});
+    }
+
+    private void printAll() {
+        outputView.printInstruction("지하철 노선도");
+        routeService.findAll().forEach((k,v) -> {
+            outputView.printInfo(k,v);
+            outputView.lineSeparator();
         });
     }
 
-    private void initializeMainHandler() {
-        System.out.println(HEADER + "원하는 기능을 선택하세요.");
-
-        System.out.println(HEADER + "역 관리 화면");
-        System.out.println(HEADER + "노선 관리 화면");
-        System.out.println(HEADER + "구간 관리 화면");
-
-
-        mainHandler.put(MainFeature.STATION, () -> handleStation(inputView.askStation()));
-        mainHandler.put(MainFeature.LINE, () -> handleLine(inputView.askLine()));
-        mainHandler.put(MainFeature.ROUTE, () -> handleRoute(inputView.askRoute()));
-        mainHandler.put(MainFeature.ROUTE_PRINT, this::printAllRoute);
-        mainHandler.put(MainFeature.QUIT, this::quit);
+    private void handle(MainFeature selected) {
+        runWithRetry(()-> mainRunnable.get(selected).run());
     }
-
-    private void initializeStationHandler() {
-        stationHandler.put(StationFeature.ENROLL, () -> enrollStation(inputView.ask("등록할 역 이름을 입력하세요.")));
-        stationHandler.put(StationFeature.DELETE, () -> deleteStation(inputView.ask("삭제할 역 이름을 입력하세요.")));
-        stationHandler.put(StationFeature.CHECK, () -> printAllStation());
-        stationHandler.put(StationFeature.BACK, () -> inputView.askMain());
-    }
-
-    private void quit() {
-    }
-
-    private void printAllRoute() {
-
-    }
-
-    private void handleRoute(RouteFeature selected) {
-        runWithRetry(() -> routeHandler.get(selected).run());
-    }
-
-    private void handleLine(LineFeature selected) {
-        runWithRetry(() -> lineHandler.get(selected).run());
-    }
-
-    private void handleStation(StationFeature selected) {
-        runWithRetry(() -> stationHandler.get(selected).run());
-    }
-
-    private void enrollStation(String stationName) {
-        stationService.addStation(stationName);
-        outputView.printString("지하철 역이 등록되었습니다.");
-    }
-
-    private void deleteStation(String stationName) {
-        stationService.deleteStation(stationName);
-        outputView.printString("지하철 역이 삭제되었습니다.");
-    }
-
-    private void printAllStation() {
-        outputView.printStationList(stationService.findAll());
-    }
-
 
     private void runWithRetry(Runnable runnable) {
         while (true) {
             try {
                 runnable.run();
+                outputView.lineSeparator();
                 return;
             } catch (IllegalArgumentException e) {
                 outputView.printError(e.getMessage());
+                outputView.lineSeparator();
             }
         }
     }

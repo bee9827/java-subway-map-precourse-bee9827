@@ -8,7 +8,6 @@ import subway.view.feature.StationFeature;
 import java.util.Scanner;
 
 public class Inputview {
-    private static final String HEADER = "## ";
     private final Scanner scanner;
 
     public Inputview(Scanner scanner) {
@@ -35,8 +34,12 @@ public class Inputview {
         return RouteFeature.getFeature(scanner.nextLine());
     }
 
-    public String ask(String s){
-        System.out.println(HEADER + s);
+    public String ask(){
+        return scanner.nextLine();
+    }
+
+    public String ask(Runnable runnable){
+        runnable.run();
         return scanner.nextLine();
     }
 

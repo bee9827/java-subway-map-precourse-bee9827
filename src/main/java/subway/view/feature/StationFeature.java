@@ -1,10 +1,10 @@
 package subway.view.feature;
 
-public enum StationFeature {
+public enum StationFeature implements Feature {
     ENROLL("1", "역 등록"),
-    DELETE("2","역 삭제"),
-    CHECK("3","역 조회"),
-    BACK("B","돌아가기");
+    DELETE("2", "역 삭제"),
+    CHECK("3", "역 조회"),
+    BACK("B", "돌아가기");
 
     private String input;
     private String name;
@@ -23,10 +23,12 @@ public enum StationFeature {
         return null;
     }
 
+    @Override
     public String getInput() {
         return input;
     }
 
+    @Override
     public String getName() {
         return name;
     }

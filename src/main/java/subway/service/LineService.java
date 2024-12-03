@@ -3,11 +3,15 @@ package subway.service;
 import subway.domain.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineService {
 
-    public List<Line> findAll(){
-        return LineRepository.lines();
+    public List<String> findAll(){
+        return LineRepository.lines()
+                .stream()
+                .map(Line::getName)
+                .collect(Collectors.toList());
     }
 
     public void addLine(String lineName, String startStationName, String endStationName) {

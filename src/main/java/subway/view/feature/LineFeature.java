@@ -1,6 +1,6 @@
 package subway.view.feature;
 
-public enum LineFeature {
+public enum LineFeature implements Feature {
     ENROLL("1", "노선 등록"),
     DELETE("2","노선 삭제"),
     CHECK("3","노선 조회"),
@@ -22,11 +22,12 @@ public enum LineFeature {
         }
         return null;
     }
-
+    @Override
     public String getInput() {
         return input;
     }
 
+    @Override
     public String getName() {
         return name;
     }
