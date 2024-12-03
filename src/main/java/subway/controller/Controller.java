@@ -16,6 +16,12 @@ public class Controller {
     private final Inputview inputView;
     private final Outputview outputView;
 
+    private final EnumMap<MainFeature, Runnable> mainHandler = new EnumMap<>(MainFeature.class);
+    private final EnumMap<StationFeature, Runnable> stationHandler = new EnumMap<>(StationFeature.class);
+    private final EnumMap<LineFeature, Runnable> lineHandler = new EnumMap<>(LineFeature.class);
+    private final EnumMap<RouteFeature, Runnable> routeHandler = new EnumMap<>(RouteFeature.class);
+
+
     private final StationService stationService = new StationService();
     private final LineService lineService = new LineService();
     private final RouteService routeService = new RouteService();
@@ -27,21 +33,30 @@ public class Controller {
 
     public void run() {
         runWithRetry(() -> {
-            handleMain(inputView.askMain());
+
         });
     }
 
-    private void handleMain(MainFeature selected) {
-        EnumMap<MainFeature, Runnable> actions = new EnumMap<>(MainFeature.class);
+    private void initializeMainHandler() {
+        System.out.println(HEADER + "원하는 기능을 선택하세요.");
 
-        actions.put(MainFeature.STATION, () -> handleStation(inputView.askStation()));
-        actions.put(MainFeature.LINE, () -> handleLine(inputView.askLine()));
-        actions.put(MainFeature.ROUTE, () -> handleRoute(inputView.askRoute()));
-        actions.put(MainFeature.ROUTE_PRINT, this::printAllRoute);
-        actions.put(MainFeature.QUIT, this::quit);
+        System.out.println(HEADER + "역 관리 화면");
+        System.out.println(HEADER + "노선 관리 화면");
+        System.out.println(HEADER + "구간 관리 화면");
 
-        Runnable action = actions.get(selected);
-        action.run();
+
+        mainHandler.put(MainFeature.STATION, () -> handleStation(inputView.askStation()));
+        mainHandler.put(MainFeature.LINE, () -> handleLine(inputView.askLine()));
+        mainHandler.put(MainFeature.ROUTE, () -> handleRoute(inputView.askRoute()));
+        mainHandler.put(MainFeature.ROUTE_PRINT, this::printAllRoute);
+        mainHandler.put(MainFeature.QUIT, this::quit);
+    }
+
+    private void initializeStationHandler() {
+        stationHandler.put(StationFeature.ENROLL, () -> enrollStation(inputView.ask("등록할 역 이름을 입력하세요.")));
+        stationHandler.put(StationFeature.DELETE, () -> deleteStation(inputView.ask("삭제할 역 이름을 입력하세요.")));
+        stationHandler.put(StationFeature.CHECK, () -> printAllStation());
+        stationHandler.put(StationFeature.BACK, () -> inputView.askMain());
     }
 
     private void quit() {
@@ -51,46 +66,34 @@ public class Controller {
 
     }
 
-    private void handleRoute(RouteFeature routeFeature) {
-
+    private void handleRoute(RouteFeature selected) {
+        runWithRetry(() -> routeHandler.get(selected).run());
     }
 
-    private void handleLine(LineFeature lineFeature) {
-
+    private void handleLine(LineFeature selected) {
+        runWithRetry(() -> lineHandler.get(selected).run());
     }
 
     private void handleStation(StationFeature selected) {
-        EnumMap<StationFeature, Runnable> actions = new EnumMap<>(StationFeature.class);
-        actions.put(StationFeature.ENROLL, () -> enrollStation());
-        actions.put(StationFeature.DELETE, () -> deleteStation());
-        actions.put(StationFeature.CHECK, () -> printStation());
-        actions.put(StationFeature.BACK, () -> inputView.askMain());
+        runWithRetry(() -> stationHandler.get(selected).run());
+    }
 
-        Runnable action = actions.get(selected);
-        action.run();
+    private void enrollStation(String stationName) {
+        stationService.addStation(stationName);
+        outputView.printString("지하철 역이 등록되었습니다.");
+    }
+
+    private void deleteStation(String stationName) {
+        stationService.deleteStation(stationName);
+        outputView.printString("지하철 역이 삭제되었습니다.");
+    }
+
+    private void printAllStation() {
+        outputView.printStationList(stationService.findAll());
     }
 
 
-    private void printStation() {
-        outputView.printList(stationService.findAll());
-    }
-
-    private void deleteStation() {
-        runWithRetry(() -> {
-            String stationName = inputView.ask("삭제할 역 이름을 입력하세요.");
-            stationService.deleteStation(stationName);
-        });
-    }
-
-    private void enrollStation() {
-        runWithRetry(() -> {
-            String stationName = inputView.ask("등록할 역 이름을 입력하세요.");
-            stationService.addStation(stationName);
-            outputView.printString("지하철 역이 등록되었습니다.");
-        });
-    }
-
-    public void runWithRetry(Runnable runnable) {
+    private void runWithRetry(Runnable runnable) {
         while (true) {
             try {
                 runnable.run();
