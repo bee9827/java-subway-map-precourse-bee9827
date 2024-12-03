@@ -13,10 +13,10 @@ public class RouteService {
 
     public Map<String,List<String>> findAll(){
         Map<String,List<String>> routeName = new LinkedHashMap<>();
-        RouteRepository.routes().forEach((k,v) ->
+        RouteRepository.routes().forEach((v) ->
                 routeName.put(
-                        k.getName(),
-                        v.stream().map(Station::getName).collect(Collectors.toList())
+                        v.getLine().getName(),
+                        v.getStations().stream().map(Station::getName).collect(Collectors.toList())
                 )
         );
 

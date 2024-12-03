@@ -1,5 +1,7 @@
 package subway.domain;
 
+import subway.file.LineLoader;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +11,7 @@ public class LineRepository {
     private static final String NOT_FOUND_LINE_EXCEPTION = "없는 지하철 노선 입니다.";
     private static final String DUPLICATE_LINE_EXCEPTION = "중복된 지하철 노선 입니다.";
 
-    private static final List<Line> lines = new ArrayList<>();
+    private static final List<Line> lines = new LineLoader().getLines();
 
     public static List<Line> lines() {
         return Collections.unmodifiableList(lines);

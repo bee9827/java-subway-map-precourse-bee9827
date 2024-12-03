@@ -15,12 +15,8 @@ public class Application {
         final Scanner scanner = new Scanner(System.in);
         Inputview inputview = new Inputview(scanner);
         Outputview outputview = new Outputview();
-        StationHandler stationHandler = new StationHandler(inputview, outputview);
-        LineHandler lineHandler = new LineHandler(inputview, outputview);
-        RouteHandler routeHandler = new RouteHandler(inputview, outputview);
-        Controller controller = new Controller(inputview, outputview, stationHandler, lineHandler, routeHandler);
+        Controller controller = new Controller(inputview, outputview);
 
         controller.run();
-        // TODO: 프로그램 구현
     }
 }

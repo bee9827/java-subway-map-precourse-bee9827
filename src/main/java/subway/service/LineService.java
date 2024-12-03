@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class LineService {
-
     public List<String> findAll(){
         return LineRepository.lines()
                 .stream()
@@ -26,6 +25,6 @@ public class LineService {
     public void deleteLine(String lineName) {
         Line line = LineRepository.findByName(lineName);
         LineRepository.deleteLine(line);
-        RouteRepository.deleteLine(line);
+        RouteRepository.deleteByLine(line);
     }
 }

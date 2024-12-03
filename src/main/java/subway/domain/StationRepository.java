@@ -1,5 +1,7 @@
 package subway.domain;
 
+import subway.file.StationLoader;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +11,7 @@ public class StationRepository {
     private static final String NOT_FOUND_STATION_EXCEPTION = "없는 지하철 역 입니다.";
     private static final String DUPLICATE_STATION_EXCEPTION = "중복된 지하철 역 입니다.";
 
-    private static final List<Station> stations = new ArrayList<>();
+    private static final List<Station> stations = new StationLoader().getStations();
 
     public static List<Station> stations() {
         return Collections.unmodifiableList(stations);
@@ -18,7 +20,7 @@ public class StationRepository {
     public static Station findByName(String name) {
         return stations.stream()
                 .filter(station -> station.getName().equals(name))
-                .findFirst()
+                .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_STATION_EXCEPTION));
     }
 

@@ -12,6 +12,8 @@ import subway.view.feature.StationFeature;
 
 import java.util.EnumMap;
 
+import static java.lang.System.exit;
+
 public class Controller {
     private final Inputview inputView;
     private final Outputview outputView;
@@ -34,11 +36,11 @@ public class Controller {
     }
 
     public void run() {
-        runWithRetry(() -> {
+        while(true){
             outputView.printInstruction("메인 화면");
             outputView.printMainScreen();
             handle();
-        });
+        }
     }
 
     private void initializeMainRunnable() {
@@ -46,7 +48,7 @@ public class Controller {
         mainRunnable.put(MainFeature.LINE, lineHandler::run);
         mainRunnable.put(MainFeature.ROUTE, routeHandler::run);
         mainRunnable.put(MainFeature.ROUTE_PRINT, this::printAll);
-        mainRunnable.put(MainFeature.QUIT, () -> {throw new IllegalStateException("종료");});
+        mainRunnable.put(MainFeature.QUIT, () -> exit(0));
     }
 
     private void printAll() {
@@ -73,8 +75,6 @@ public class Controller {
             } catch (IllegalArgumentException e) {
                 outputView.printError(e.getMessage());
                 outputView.lineSeparator();
-            } catch(IllegalStateException e) {
-                return ;
             }
         }
     }
