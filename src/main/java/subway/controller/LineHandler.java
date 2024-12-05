@@ -51,6 +51,7 @@ public class LineHandler implements Handler {
     @Override
     public void handle() {
         runWithRetry(() -> {
+            outputView.printInstruction("원하는 기능을 선택하세요.");
             lineRunnable.get(inputView.askLine()).run();
         }, outputView);
     }

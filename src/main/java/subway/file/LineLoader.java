@@ -2,21 +2,21 @@ package subway.file;
 
 import subway.domain.Line;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LineLoader {
     private static final String LINE_PATH = "src/main/resources/line.md";
-    private final List<Line> lines;
+    private static final List<Line> lines = new ArrayList<>();
 
-    public LineLoader() {
-        lines = FileDataLoader.getObjects(LINE_PATH, this::createLine);
-    }
+    private LineLoader() {}
 
-    public List<Line> getLines() {
+    public static List<Line> getLines() {
+        lines.addAll(FileDataLoader.getObjects(LINE_PATH, LineLoader::createLine));
         return lines;
     }
 
-    private Line createLine(String[] args) {
+    private static Line createLine(String[] args) {
         String name = args[0];
         return new Line(name);
     }
