@@ -1,8 +1,11 @@
 package subway.domain;
 
+import subway.file.RouteLoader;
+
 import java.util.*;
 
 public class RouteRepository {
+    private static final int START_POINT = 1;
     private static final String NOT_FOUND_LINE_EXCEPTION = "해당 구간에 노선이 존재 하지 않습니다.";
     private static final String DUPLICATE_LINE_EXCEPTION = "해당 구간에 동일한 노선이 존재합니다.";
     private static final List<Route> routes = new ArrayList<>();

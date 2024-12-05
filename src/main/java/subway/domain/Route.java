@@ -72,4 +72,49 @@ public class Route {
     private boolean checkSize(int size) {
         return size >= MIN_ROUTE_SIZE;
     }
+
+    public void addStation(Station station, int location) {
+        validDuplicateStation(station);
+        validLocationForAdd(location);
+        stations.add(location - STATION_START_POINT, station);
+
+    }
+
+    public void deleteStation(Station station) {
+        validSizeForDelete();
+        validStationForDelete(station);
+        stations.remove(station);
+    }
+
+    private void validSizeForDelete() {
+        if (checkSize(stations.size() - 1)) throw new IllegalArgumentException(ROUTE_SIZE_EXCEPTION);
+    }
+
+    private void validLocationForAdd(int location) {
+        if (location < STATION_START_POINT || stations.size() < location - STATION_START_POINT) {
+            throw new IllegalArgumentException(INVALID_LOCATION_EXCEPTION);
+        }
+    }
+
+    private void validDuplicateStation(Station station) {
+        if (stations.contains(station)) {
+            throw new IllegalArgumentException(DUPLICATE_STATION_EXCEPTION);
+        }
+    }
+
+    private void validStationForDelete(Station station) {
+        if (!stations.contains(station)) {
+            throw new IllegalArgumentException(NOT_FOUND_STATION_EXCEPTION);
+        }
+    }
+
+    private void validSize(List<Station> stations) {
+        if (!checkSize(stations.size())) {
+            throw new IllegalArgumentException(ROUTE_SIZE_EXCEPTION);
+        }
+    }
+
+    private boolean checkSize(int size) {
+        return size >= MIN_ROUTE_SIZE;
+    }
 }
