@@ -1,7 +1,6 @@
 package subway.service;
 
 import subway.domain.*;
-import subway.file.LineLoader;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +27,6 @@ public class LineService {
     public void deleteLine(String lineName) {
         Line line = LineRepository.findByName(lineName);
         LineRepository.deleteLine(line);
-        RouteRepository.deleteByLine(line);
+        RouteRepository.deleteRoute(line);
     }
 }

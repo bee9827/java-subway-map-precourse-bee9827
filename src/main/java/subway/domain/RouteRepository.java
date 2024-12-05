@@ -19,23 +19,8 @@ public class RouteRepository {
         routes.add(route);
     }
 
-    public static void addStation(Line line, Station station, int location) {
-        findStationsByLine(line).add(location, station);
-    }
-
-    public static List<Station> findStationsByLine(Line line) {
-        return routes.stream()
-                .filter(r -> r.getLine().equals(line))
-                .map(Route::getStations)
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_LINE_EXCEPTION));
-    }
-
-    public static Route findRouteByLine(Line line) {
-        return routes.stream()
-                .filter(r -> r.getLine().equals(line))
-                .findAny()
-                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_LINE_EXCEPTION));
+    public static void deleteRoute(Line line) {
+        routes.remove(findRouteByLine(line));
     }
 
     public static boolean isPresentStation(Station station) {
@@ -43,14 +28,20 @@ public class RouteRepository {
                 .anyMatch(route -> route.getStations().contains(station));
     }
 
+    public static void addStation(Line line, Station station, int location) {
+        findRouteByLine(line).addStation(location, station);
+    }
+
     public static void deleteStation(Line line, Station station) {
         findRouteByLine(line).deleteStation(station);
     }
 
-    public static void deleteByLine(Line line) {
-        findStationsByLine(line);
-        Route route = findRouteByLine(line);
-        routes.remove(route);
+
+    private static Route findRouteByLine(Line line) {
+        return routes.stream()
+                .filter(r -> r.getLine().equals(line))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_LINE_EXCEPTION));
     }
 
     private static void validRouteForAdd(Route route) {

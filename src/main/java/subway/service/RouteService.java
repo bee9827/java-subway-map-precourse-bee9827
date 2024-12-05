@@ -1,7 +1,6 @@
 package subway.service;
 
 import subway.domain.*;
-import subway.file.RouteLoader;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -12,7 +11,7 @@ public class RouteService {
 
     public Map<String,List<String>> findAll(){
         Map<String,List<String>> routeName = new LinkedHashMap<>();
-        RouteRepository.routes().forEach((v) ->
+        RouteRepository.routes().forEach(v ->
                 routeName.put(
                         v.getLine().getName(),
                         v.getStations().stream().map(Station::getName).collect(Collectors.toList())
@@ -33,7 +32,6 @@ public class RouteService {
         Station station = StationRepository.findByName(stationName);
         Line line = LineRepository.findByName(lineName);
 
-        List<Station> stations = RouteRepository.findStationsByLine(line);
         RouteRepository.deleteStation(line, station);
     }
 }

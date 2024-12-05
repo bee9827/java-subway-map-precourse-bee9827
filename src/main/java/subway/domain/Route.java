@@ -27,7 +27,7 @@ public class Route {
         return stations;
     }
 
-    public void addStation(Station station, int location) {
+    public void addStation(int location, Station station) {
         validDuplicateStation(station);
         validLocationForAdd(location);
         stations.add(location - STATION_START_POINT, station);

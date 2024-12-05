@@ -28,10 +28,6 @@ public class StationService {
         StationRepository.deleteStation(station);
     }
 
-    private void loadData(){
-        StationLoader.getStations().forEach(StationRepository::addStation);
-    }
-
     private void validLineStation(Station station) {
         if (RouteRepository.isPresentStation(station)) {
             throw new IllegalArgumentException(REGISTERED_STATION_EXCEPTION);
