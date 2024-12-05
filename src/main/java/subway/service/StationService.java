@@ -3,6 +3,7 @@ package subway.service;
 import subway.domain.RouteRepository;
 import subway.domain.Station;
 import subway.domain.StationRepository;
+import subway.file.StationLoader;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +26,10 @@ public class StationService {
         Station station = StationRepository.findByName(name);
         validLineStation(station);
         StationRepository.deleteStation(station);
+    }
+
+    private void loadData(){
+        StationLoader.getStations().forEach(StationRepository::addStation);
     }
 
     private void validLineStation(Station station) {

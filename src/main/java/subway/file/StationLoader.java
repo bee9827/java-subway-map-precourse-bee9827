@@ -2,21 +2,21 @@ package subway.file;
 
 import subway.domain.Station;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class StationLoader {
     private static final String STATION_PATH = "src/main/resources/station.md";
-    private final List<Station> stations;
+    private static final List<Station> stations = new ArrayList<>();
 
-    public StationLoader() {
-        stations = FileDataLoader.getObjects(STATION_PATH, this::createStation);
-    }
+    private StationLoader() {}
 
-    public List<Station> getStations() {
+    public static List<Station> getStations() {
+        stations.addAll(FileDataLoader.getObjects(STATION_PATH, StationLoader::createStation));
         return stations;
     }
 
-    private Station createStation(String[] args) {
+    private static Station createStation(String[] args) {
         String name = args[0];
         return new Station(name);
     }

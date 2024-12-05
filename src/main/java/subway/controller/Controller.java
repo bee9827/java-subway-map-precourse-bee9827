@@ -1,17 +1,17 @@
 package subway.controller;
 
-import subway.service.LineService;
+import subway.domain.LineRepository;
+import subway.domain.RouteRepository;
+import subway.domain.StationRepository;
+import subway.file.LineLoader;
+import subway.file.RouteLoader;
+import subway.file.StationLoader;
 import subway.service.RouteService;
-import subway.service.StationService;
 import subway.view.Inputview;
 import subway.view.Outputview;
-import subway.view.feature.LineFeature;
 import subway.view.feature.MainFeature;
-import subway.view.feature.RouteFeature;
-import subway.view.feature.StationFeature;
 
 import java.util.EnumMap;
-
 import static java.lang.System.exit;
 
 public class Controller {
@@ -33,6 +33,7 @@ public class Controller {
         this.lineHandler = new LineHandler(inputView,outputView);
         this.routeHandler = new RouteHandler(inputView,outputView);
         initializeMainRunnable();
+        loadRepositoryData();
     }
 
     public void run() {
@@ -49,6 +50,13 @@ public class Controller {
         mainRunnable.put(MainFeature.ROUTE, routeHandler::run);
         mainRunnable.put(MainFeature.ROUTE_PRINT, this::printAll);
         mainRunnable.put(MainFeature.QUIT, () -> exit(0));
+    }
+
+    private void loadRepositoryData() {
+        // 순서 주의!! Route가 마지막에 와야함
+        StationLoader.getStations().forEach(StationRepository::addStation);
+        LineLoader.getLines().forEach(LineRepository::addLine);
+        RouteLoader.getRoutes().forEach(RouteRepository::addRoute);
     }
 
     private void printAll() {
