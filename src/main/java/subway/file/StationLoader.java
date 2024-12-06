@@ -16,8 +16,8 @@ public class StationLoader {
         return stations;
     }
 
-    private static Station createStation(String[] args) {
-        String name = args[0];
+    private static Station createStation(List<String> args) {
+        String name = args.get(0);
         return new Station(name);
     }
 }

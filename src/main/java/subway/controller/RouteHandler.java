@@ -7,7 +7,7 @@ import subway.view.feature.RouteFeature;
 
 import java.util.EnumMap;
 
-public class RouteHandler implements Handler {
+public class RouteHandler implements Handler, Runnable {
     private final Inputview inputView;
     private final Outputview outputView;
     private final EnumMap<RouteFeature, Runnable> routeRunnable = new EnumMap<>(RouteFeature.class);
@@ -21,9 +21,12 @@ public class RouteHandler implements Handler {
 
     @Override
     public void run() {
-        outputView.printInstruction("구간 관리");
-        outputView.printRouteScreen();
-        handle();
+        runWithRetry(() -> {
+            outputView.printInstruction("구간 관리");
+            outputView.printRouteScreen();
+            outputView.printInstruction("원하는 기능을 선택하세요.");
+            routeRunnable.get(inputView.askRoute()).run();
+        }, outputView);
     }
 
     @Override
@@ -45,16 +48,11 @@ public class RouteHandler implements Handler {
 
     @Override
     public void printAll() {
-        // TODO document why this method is empty
-        //  다른 곳에서 사용.
-    }
-
-    @Override
-    public void handle() {
-        runWithRetry(() -> {
-            outputView.printInstruction("원하는 기능을 선택하세요.");
-            routeRunnable.get(inputView.askRoute()).run();
-        }, outputView);
+        outputView.printInstruction("지하철 노선도");
+        routeService.findAll().forEach((k, v) -> {
+            outputView.printInfo(k, v);
+            outputView.lineSeparator();
+        });
     }
 
     private void initializeRouteHandler() {

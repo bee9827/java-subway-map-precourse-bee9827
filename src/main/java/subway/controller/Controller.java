@@ -23,12 +23,13 @@ public class Controller {
     private final RouteHandler routeHandler;
 
     private final EnumMap<MainFeature, Runnable> mainRunnable = new EnumMap<>(MainFeature.class);
-    private final RouteService routeService = new RouteService();
 
 
     public Controller(Inputview inputView, Outputview outputView) {
         this.inputView = inputView;
         this.outputView = outputView;
+        // Todo
+        //  Config 이용 해서 싱글톤 관리 하기
         this.stationHandler = new StationHandler(inputView,outputView);
         this.lineHandler = new LineHandler(inputView,outputView);
         this.routeHandler = new RouteHandler(inputView,outputView);
@@ -45,10 +46,10 @@ public class Controller {
     }
 
     private void initializeMainRunnable() {
-        mainRunnable.put(MainFeature.STATION, stationHandler::run);
-        mainRunnable.put(MainFeature.LINE, lineHandler::run);
-        mainRunnable.put(MainFeature.ROUTE, routeHandler::run);
-        mainRunnable.put(MainFeature.ROUTE_PRINT, this::printAll);
+        mainRunnable.put(MainFeature.STATION, stationHandler);
+        mainRunnable.put(MainFeature.LINE, lineHandler);
+        mainRunnable.put(MainFeature.ROUTE, routeHandler);
+        mainRunnable.put(MainFeature.ROUTE_PRINT, routeHandler::printAll);
         mainRunnable.put(MainFeature.QUIT, () -> exit(0));
     }
 
@@ -59,13 +60,6 @@ public class Controller {
         RouteLoader.getRoutes().forEach(RouteRepository::addRoute);
     }
 
-    private void printAll() {
-        outputView.printInstruction("지하철 노선도");
-        routeService.findAll().forEach((k, v) -> {
-            outputView.printInfo(k, v);
-            outputView.lineSeparator();
-        });
-    }
 
     private void handle() {
         runWithRetry(() ->{

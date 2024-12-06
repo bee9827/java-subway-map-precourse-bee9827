@@ -16,11 +16,11 @@ public class RouteLoader {
         return routes;
     }
 
-    private static Route createRoute(String[] args) {
-        Line line = LineRepository.findByName(args[0]);
+    private static Route createRoute(List<String> args) {
+        Line line = LineRepository.findByName(args.get(0));
         List<Station> stations = new ArrayList<>();
-        for (int i = 1; i < args.length; i++) {
-            Station station = StationRepository.findByName(args[i].trim());
+        for (int i = 1; i < args.size(); i++) {
+            Station station = StationRepository.findByName(args.get(i));
             stations.add(station);
         }
         return new Route(line, stations);

@@ -16,8 +16,8 @@ public class LineLoader {
         return lines;
     }
 
-    private static Line createLine(String[] args) {
-        String name = args[0];
+    private static Line createLine(List<String> args) {
+        String name = args.get(0);
         return new Line(name);
     }
 }

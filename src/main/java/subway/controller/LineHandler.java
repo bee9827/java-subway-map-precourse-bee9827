@@ -3,11 +3,12 @@ package subway.controller;
 import subway.service.LineService;
 import subway.view.Inputview;
 import subway.view.Outputview;
+import subway.view.feature.Feature;
 import subway.view.feature.LineFeature;
 
 import java.util.EnumMap;
 
-public class LineHandler implements Handler {
+public class LineHandler implements Handler, Runnable {
     private final Inputview inputView;
     private final Outputview outputView;
     private final EnumMap<LineFeature, Runnable> lineRunnable = new EnumMap<>(LineFeature.class);
@@ -21,9 +22,12 @@ public class LineHandler implements Handler {
 
     @Override
     public void run() {
-        outputView.printInstruction("노선 관리 화면");
-        outputView.printLineScreen();
-        handle();
+        runWithRetry(() -> {
+            outputView.printInstruction("노선 관리 화면");
+            outputView.printLineScreen();
+            outputView.printInstruction("원하는 기능을 선택하세요.");
+            lineRunnable.get(inputView.askLine()).run();
+        }, outputView);
     }
 
     @Override
@@ -46,14 +50,6 @@ public class LineHandler implements Handler {
     public void printAll() {
         outputView.printInstruction("노선 목록");
         outputView.printInfo(lineService.findAll());
-    }
-
-    @Override
-    public void handle() {
-        runWithRetry(() -> {
-            outputView.printInstruction("원하는 기능을 선택하세요.");
-            lineRunnable.get(inputView.askLine()).run();
-        }, outputView);
     }
 
     private void initializeLineHandler() {

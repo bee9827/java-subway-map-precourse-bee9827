@@ -7,7 +7,7 @@ import subway.view.feature.StationFeature;
 
 import java.util.EnumMap;
 
-public class StationHandler implements Handler {
+public class StationHandler implements Handler, Runnable {
     private final Inputview inputView;
     private final Outputview outputView;
     private final EnumMap<StationFeature, Runnable> stationRunnable = new EnumMap<>(StationFeature.class);
@@ -21,9 +21,12 @@ public class StationHandler implements Handler {
 
     @Override
     public void run() {
-        outputView.printInstruction("역 관리 화면");
-        outputView.printStationScreen();
-        handle();
+        runWithRetry(() -> {
+            outputView.printInstruction("역 관리 화면");
+            outputView.printStationScreen();
+            outputView.printInstruction("원하는 기능을 선택하세요.");
+            stationRunnable.get(inputView.askStation()).run();
+        }, outputView);
     }
 
     @Override
@@ -46,13 +49,6 @@ public class StationHandler implements Handler {
         outputView.printInfo(stationService.findAll());
     }
 
-    @Override
-    public void handle() {
-        runWithRetry(() -> {
-            outputView.printInstruction("원하는 기능을 선택하세요.");
-            stationRunnable.get(inputView.askStation()).run();
-        }, outputView);
-    }
 
     private void initializeStationHandler() {
         stationRunnable.put(StationFeature.ENROLL, this::enroll);

@@ -41,7 +41,7 @@ public class Route {
     }
 
     private void validSizeForDelete() {
-        if (checkSize(stations.size() - 1)) throw new IllegalArgumentException(ROUTE_SIZE_EXCEPTION);
+        if (!checkSize(stations.size() - 1)) throw new IllegalArgumentException(ROUTE_SIZE_EXCEPTION);
     }
 
     private void validLocationForAdd(int location) {
