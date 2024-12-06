@@ -6,13 +6,11 @@ import subway.domain.StationRepository;
 import subway.file.LineLoader;
 import subway.file.RouteLoader;
 import subway.file.StationLoader;
-import subway.service.RouteService;
 import subway.view.Inputview;
 import subway.view.Outputview;
 import subway.view.feature.MainFeature;
 
 import java.util.EnumMap;
-import static java.lang.System.exit;
 
 public class Controller {
     private final Inputview inputView;
@@ -30,19 +28,20 @@ public class Controller {
         this.outputView = outputView;
         // Todo
         //  Config 이용 해서 싱글톤 관리 하기
-        this.stationHandler = new StationHandler(inputView,outputView);
-        this.lineHandler = new LineHandler(inputView,outputView);
-        this.routeHandler = new RouteHandler(inputView,outputView);
+        this.stationHandler = new StationHandler(inputView, outputView);
+        this.lineHandler = new LineHandler(inputView, outputView);
+        this.routeHandler = new RouteHandler(inputView, outputView);
         initializeMainRunnable();
         loadRepositoryData();
     }
 
     public void run() {
-        while(true){
+        runWithRetry(() -> {
             outputView.printInstruction("메인 화면");
             outputView.printMainScreen();
-            handle();
-        }
+            outputView.printInstruction("원하는 기능을 선택하세요.");
+            mainRunnable.get(inputView.askMain()).run();
+        });
     }
 
     private void initializeMainRunnable() {
@@ -50,7 +49,9 @@ public class Controller {
         mainRunnable.put(MainFeature.LINE, lineHandler);
         mainRunnable.put(MainFeature.ROUTE, routeHandler);
         mainRunnable.put(MainFeature.ROUTE_PRINT, routeHandler::printAll);
-        mainRunnable.put(MainFeature.QUIT, () -> exit(0));
+        mainRunnable.put(MainFeature.QUIT, () -> {
+            throw new IllegalStateException("종료");
+        });
     }
 
     private void loadRepositoryData() {
@@ -58,14 +59,6 @@ public class Controller {
         StationLoader.getStations().forEach(StationRepository::addStation);
         LineLoader.getLines().forEach(LineRepository::addLine);
         RouteLoader.getRoutes().forEach(RouteRepository::addRoute);
-    }
-
-
-    private void handle() {
-        runWithRetry(() ->{
-            outputView.printInstruction("원하는 기능을 선택하세요.");
-            mainRunnable.get(inputView.askMain()).run();
-        });
     }
 
     private void runWithRetry(Runnable runnable) {
@@ -77,6 +70,9 @@ public class Controller {
             } catch (IllegalArgumentException e) {
                 outputView.printError(e.getMessage());
                 outputView.lineSeparator();
+            } catch (IllegalStateException e) {
+                outputView.printString("종료");
+                break;
             }
         }
     }
